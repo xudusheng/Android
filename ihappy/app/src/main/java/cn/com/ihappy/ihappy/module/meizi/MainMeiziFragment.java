@@ -5,15 +5,14 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -45,7 +44,7 @@ public class MainMeiziFragment extends RxLazyFragment {
 
         //使用瀑布流布局,第一个参数 spanCount 列数,第二个参数 orentation 排列方向
         StaggeredGridLayoutManager recyclerViewLayoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+                new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         //线性布局Manager
 //        LinearLayoutManager recyclerViewLayoutManager = new LinearLayoutManager(this);
 //        recyclerViewLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -59,6 +58,14 @@ public class MainMeiziFragment extends RxLazyFragment {
         ImageAdapter adapter = new ImageAdapter(this.meituList, this.getContext());
         //设置adapter
         mRecyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new ImageAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                MeituBean meituBean = meituList.get(position);
+                L.e(meituBean.image_src);
+            }
+        });
     }
 
     @OnClick(R.id.toolbar)

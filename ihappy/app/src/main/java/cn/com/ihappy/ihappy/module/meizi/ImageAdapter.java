@@ -1,20 +1,22 @@
 package cn.com.ihappy.ihappy.module.meizi;
 
+import android.annotation.TargetApi;
 import android.content.Context;
-import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+import butterknife.OnClick;
 import cn.com.ihappy.ihappy.R;
 import cn.com.ihappy.ihappy.beans.meizi.MeituBean;
 
@@ -22,6 +24,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageItemHol
 
     private ArrayList<MeituBean> mData;
     private Context mContext;
+    private static OnItemClickListener mOnItemClickListener;
+
 
     public ImageAdapter(ArrayList<MeituBean> mData, Context mContext) {
         this.mData = mData;
@@ -36,10 +40,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageItemHol
         return new ImageItemHolder(view);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBindViewHolder(@NonNull ImageItemHolder imageItemHolder, int position) {
+
+        //用于绑定事件
+        imageItemHolder.position = position;
         MeituBean meituBean = this.mData.get(position);
-        Glide.with(mContext).load(meituBean.image_src).into(imageItemHolder.img_icon);
+        Glide.with(mContext)
+                .load(meituBean.image_src)
+                .into(imageItemHolder.img_icon);
     }
 
 
@@ -48,12 +59,31 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageItemHol
         return this.mData.size();
     }
 
-    static class ImageItemHolder extends RecyclerView.ViewHolder {
+
+    static class ImageItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img_icon;
+        int position;
 
         public ImageItemHolder(@NonNull View itemView) {
             super(itemView);
             img_icon = itemView.findViewById(R.id.image_item);
+            img_icon.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(img_icon, this.position);
+            }
+        }
+    }
+
+    // 自定义点击事件
+    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
     }
 }
