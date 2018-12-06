@@ -9,7 +9,7 @@ public interface ConfigService {
     /**
      * 配置文件初始化
      */
-    @GET("config/menu_1.0.3.json")
+    @GET("config/menu_dev.json")
     Call<ConfigBean> fetchConfigData();
 
 }

@@ -1,22 +1,19 @@
 package cn.com.ihappy.ihappy.module.video;
 
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.widget.Toolbar;
 
-import com.trello.rxlifecycle.components.support.RxFragment;
-
+import butterknife.BindView;
+import butterknife.OnClick;
+import cn.com.ihappy.ihappy.MainActivity;
 import cn.com.ihappy.ihappy.R;
 import cn.com.ihappy.ihappy.base.RxLazyFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class MainVideoFragment extends RxLazyFragment {
-
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     @Override
     public int getLayoutResId() {
@@ -25,6 +22,15 @@ public class MainVideoFragment extends RxLazyFragment {
 
     @Override
     public void finishCreateView(Bundle state) {
+        mToolbar.setTitle(this.menuBean.title);
+        mToolbar.setNavigationIcon(R.drawable.ic_navigation_drawer);
+    }
 
+    @OnClick(R.id.toolbar)
+    public void showMenu() {
+        Activity mainActivity = getActivity();
+        if (mainActivity instanceof MainActivity) {
+            ((MainActivity) mainActivity).toggleDrawer();
+        }
     }
 }

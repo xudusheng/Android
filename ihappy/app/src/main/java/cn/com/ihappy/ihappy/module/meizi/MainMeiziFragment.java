@@ -1,109 +1,98 @@
 package cn.com.ihappy.ihappy.module.meizi;
 
-import android.content.Context;
-import android.net.Uri;
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import cn.com.ihappy.ihappy.MainActivity;
 import cn.com.ihappy.ihappy.R;
+import cn.com.ihappy.ihappy.base.RxLazyFragment;
+import cn.com.ihappy.ihappy.beans.meizi.MeituBean;
+import cn.com.ihappy.ihappy.utils.L;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MainMeiziFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MainMeiziFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MainMeiziFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class MainMeiziFragment extends RxLazyFragment {
+    private ArrayList<MeituBean> meituList;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    @BindView(R.id.meizi_recyclerView)
+    RecyclerView mRecyclerView;
 
-    private OnFragmentInteractionListener mListener;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
-    public MainMeiziFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainMeiziFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MainMeiziFragment newInstance(String param1, String param2) {
-        MainMeiziFragment fragment = new MainMeiziFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public int getLayoutResId() {
+        return R.layout.fragment_main_meizi;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void finishCreateView(Bundle state) {
+        mToolbar.setTitle(this.menuBean.title);
+        mToolbar.setNavigationIcon(R.drawable.ic_navigation_drawer);
+
+
+        //使用瀑布流布局,第一个参数 spanCount 列数,第二个参数 orentation 排列方向
+        StaggeredGridLayoutManager recyclerViewLayoutManager =
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        //线性布局Manager
+//        LinearLayoutManager recyclerViewLayoutManager = new LinearLayoutManager(this);
+//        recyclerViewLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        //网络布局Manager
+//        GridLayoutManager recyclerViewLayoutManager = new GridLayoutManager(this, 3);
+        //给recyclerView设置LayoutManager
+
+        mRecyclerView.setLayoutManager(recyclerViewLayoutManager);
+        //读取数据源
+        this.readMeiziResourc();
+        ImageAdapter adapter = new ImageAdapter(this.meituList, this.getContext());
+        //设置adapter
+        mRecyclerView.setAdapter(adapter);
+    }
+
+    @OnClick(R.id.toolbar)
+    public void showMenu() {
+        Activity mainActivity = getActivity();
+        if (mainActivity instanceof MainActivity) {
+            ((MainActivity) mainActivity).toggleDrawer();
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_meizi, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    private void readMeiziResourc() {
+        //meizi_zipai是我的文件名，这里应该根据具体文件更改
+        InputStream input = getResources().openRawResource(R.raw.meizi_zipai);
+        Reader reader = new InputStreamReader(input);
+        StringBuffer stringBuffer = new StringBuffer();
+        char b[] = new char[1024];
+        int len = -1;
+        try {
+            while ((len = reader.read(b)) != -1) {
+                stringBuffer.append(b);
+            }
+        } catch (IOException e) {
+            L.e("IOException = " + e.getMessage());
         }
-    }
+        String string = stringBuffer.toString();
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+        String[] splitResult = string.split(";");
+
+        ArrayList<String> urlList = new ArrayList<>(Arrays.asList(splitResult));
+        this.meituList = new ArrayList<>();
+        for (String url : urlList) {
+            MeituBean meituBean = new MeituBean();
+            meituBean.image_src = url;
+            this.meituList.add(meituBean);
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 }

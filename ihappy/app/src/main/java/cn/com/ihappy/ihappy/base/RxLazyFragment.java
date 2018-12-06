@@ -14,6 +14,7 @@ import com.trello.rxlifecycle.components.support.RxFragment;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import cn.com.ihappy.ihappy.beans.MenuBean;
 
 /**
  * Created by hcc on 16/8/7 21:18
@@ -30,6 +31,7 @@ public abstract class RxLazyFragment extends RxFragment {
     protected boolean isVisible;
     private Unbinder bind;
 
+    public MenuBean menuBean;
     public abstract
     @LayoutRes
     int getLayoutResId();

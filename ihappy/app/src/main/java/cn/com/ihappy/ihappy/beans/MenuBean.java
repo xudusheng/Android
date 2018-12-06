@@ -85,17 +85,17 @@ public class MenuBean {
         }
         MenuType mType;
         switch (type){
-            case 0: mType = MenuType.Reader;
-            case 1: mType = MenuType.Video;
-            case 2:mType = MenuType.Q2002;
-            case 3:mType = MenuType.HotNews;
-            case 4:mType = MenuType.Bizhi;
-            case 5:mType = MenuType.Shuaige;
-            case 6:mType = MenuType.Welfare;
-            default:mType = MenuType.HotNews;
+            case 0: mType = MenuType.Reader;break;
+            case 1: mType = MenuType.Video;break;
+            case 2:mType = MenuType.Q2002;break;
+            case 3:mType = MenuType.HotNews;break;
+            case 4:mType = MenuType.Bizhi;break;
+            case 5:mType = MenuType.Shuaige;break;
+            case 6:mType = MenuType.Welfare;break;
+            default:mType = MenuType.HotNews;break;
         }
         this.setMenuType(mType);
-        return mType;
+        return menuType;
     }
 
     public void setMenuType(MenuType menuType) {

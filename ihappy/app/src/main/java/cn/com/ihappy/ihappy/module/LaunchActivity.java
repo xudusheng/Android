@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 import java.util.concurrent.TimeUnit;
 
-import cn.com.ihappy.ihappy.L;
+import cn.com.ihappy.ihappy.utils.L;
 import cn.com.ihappy.ihappy.MainActivity;
 import cn.com.ihappy.ihappy.R;
 import cn.com.ihappy.ihappy.beans.ConfigBean;
