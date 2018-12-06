@@ -4,11 +4,9 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <Button
+        android:id="@+id/button_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:contentDescription="launchImage"
-        android:src="@drawable/logo_launch" />
+        android:text="小微视频" />
 </RelativeLayout>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <group >
+        <item
+            android:id="@+id/item_video"
+            android:title="小微视频" />
+        <item
+            android:id="@+id/item_meizi"
+            android:title="美女壁纸" />
+        <item
+            android:id="@+id/item_shuaige"
+            android:title="帅哥壁纸" />
+        <item
+            android:id="@+id/item_news"
+            android:title="头条新闻" />
+
+    </group>
+</menu>
