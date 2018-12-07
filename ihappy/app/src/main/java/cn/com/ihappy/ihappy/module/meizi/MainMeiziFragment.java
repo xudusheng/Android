@@ -16,6 +16,8 @@ import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cc.shinichi.library.ImagePreview;
+import cc.shinichi.library.bean.ImageInfo;
 import cn.com.ihappy.ihappy.MainActivity;
 import cn.com.ihappy.ihappy.R;
 import cn.com.ihappy.ihappy.base.RxLazyFragment;
@@ -62,8 +64,21 @@ public class MainMeiziFragment extends RxLazyFragment {
         adapter.setOnItemClickListener(new ImageAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                MeituBean meituBean = meituList.get(position);
-                L.e(meituBean.image_src);
+                ArrayList<ImageInfo> imageInfoArrayList = new ArrayList<>();
+                for (MeituBean meituBean : meituList) {
+                    ImageInfo imageInfo = new ImageInfo();
+                    imageInfo.setOriginUrl(meituBean.image_src);
+                    imageInfo.setThumbnailUrl(meituBean.image_src);
+                    imageInfoArrayList.add(imageInfo);
+                }
+                ImagePreview
+                        .getInstance()
+                        .setContext(getContext())
+                        .setIndex(position)
+                        .setFolderName(String.valueOf(R.string.app_name))// 保存的文件夹名称，SD卡根目录
+                        .setImageInfoList(imageInfoArrayList)
+                        .start();
+
             }
         });
     }
