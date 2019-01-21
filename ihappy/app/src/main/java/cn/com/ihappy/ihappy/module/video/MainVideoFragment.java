@@ -4,7 +4,10 @@ package cn.com.ihappy.ihappy.module.video;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -43,6 +46,7 @@ public class MainVideoFragment extends RxLazyFragment {
         mToolbar.setTitle(this.menuBean.title);
         mToolbar.setNavigationIcon(R.drawable.ic_navigation_drawer);
 
+        new XPathParse().fetchHtml();
     }
 
     @OnClick(R.id.toolbar)
@@ -57,31 +61,35 @@ public class MainVideoFragment extends RxLazyFragment {
 
 //异步获取网络xml
 class XPathParse  {
+    public void fetchHtml() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String path = "http://www.k2938.com/type/1.html";
+                org.jsoup.nodes.Document document = null;
+                try {
+                    document = Jsoup.connect(path).timeout(5000).get();
+                    Log.e("e", document.html());
+                    String htmlString = document.html();
+                    Elements items = document.getElementsByClass("movie-item");
+                    for (org.jsoup.nodes.Element oneElement : items) {
+                        org.jsoup.nodes.Element a_link_element = oneElement.selectFirst("a");
+                        String name = a_link_element.attr("title");
+                        String href = a_link_element.attr("href");
+                        Log.i("title", name);
 
-    public void fetchHtml () throws Exception {
+                        org.jsoup.nodes.Element image_element = oneElement.selectFirst("img");
+                        String imageurl = image_element.attr("src");
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();//实例化DocumentBuilderFactory对象
-        DocumentBuilder bulider = dbf.newDocumentBuilder();
-        Document doc = bulider.parse(Thread.currentThread().getContextClassLoader().getResourceAsStream("http://www.k2938.com"));
-
-
-        XPathFactory factory = XPathFactory.newInstance();//实例化XPathFactory对象
-        XPath xpath = factory.newXPath();
+                        Log.i("image", imageurl);
 
 
-//        XPathExpression compile = xpath.compile("//student");//选取student节点
-//        NodeList nodes = (NodeList)compile.evaluate(doc, XPathConstants.NODESET);//获取student节点的所有节点
-//        for (int i = 0; i < nodes.getLength(); i ++) {
-//            NodeList childNodes = nodes.item(i).getChildNodes(); //获取一个student节点所有的子节点，返回集合
-//            //遍历所有子节点，获取节点的名称与数据，将其存与Students对象的属性进行匹配并存入到该对象
-//        }
+                    }
 
-        XPathExpression pageXpath = xpath.compile("//div[@class =\"pages\"]//ul");//选取pages节点
-        NodeList page_nodes = (NodeList)pageXpath.evaluate(doc, XPathConstants.NODESET);
-        if (page_nodes.getLength() > 0) {
-            Node nextPage_node = page_nodes.item(0);
-            NodeList childElements = nextPage_node.getChildNodes();
-        }
-
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
