@@ -3,6 +3,7 @@ package cn.com.ihappy.ihappy.module.video;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -71,6 +72,10 @@ public class MainVideoFragment extends RxLazyFragment {
             public void onItemClick(View view, int position) {
                 HtmlVideoBean videoBean = mVideoAdapter.videoList.get(position);
                 L.e(videoBean.toString());
+
+                Intent intent = new Intent(getContext(), VideoDetailActivity.class);
+                startActivity(intent);
+
             }
         });
 
