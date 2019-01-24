@@ -6,13 +6,12 @@
     <include layout="@layout/layout_toolbar" />
 
 
-    <GridView
-        android:id="@+id/video_gridview"
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/video_recyclerView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:numColumns="3"
-        android:layout_margin="5dp">
+        android:layout_below="@+id/toolbar">
 
-    </GridView>
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>
