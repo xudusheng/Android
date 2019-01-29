@@ -2,17 +2,13 @@ package cn.com.ihappy.ihappy.module.video;
 
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.GridView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +23,6 @@ import cn.com.ihappy.ihappy.MainActivity;
 import cn.com.ihappy.ihappy.R;
 import cn.com.ihappy.ihappy.base.RxLazyFragment;
 import cn.com.ihappy.ihappy.beans.video.HtmlVideoBean;
-import cn.com.ihappy.ihappy.module.meizi.ImageAdapter;
 import cn.com.ihappy.ihappy.utils.L;
 
 public class MainVideoFragment extends RxLazyFragment {
@@ -62,7 +57,6 @@ public class MainVideoFragment extends RxLazyFragment {
         //给recyclerView设置LayoutManager
 
         mRecyclerView.setLayoutManager(recyclerViewLayoutManager);
-
         mVideoAdapter = new VideoAdapter(this.getContext());
         //设置adapter
         mRecyclerView.setAdapter(mVideoAdapter);
@@ -74,6 +68,7 @@ public class MainVideoFragment extends RxLazyFragment {
                 L.e(videoBean.toString());
 
                 Intent intent = new Intent(getContext(), VideoDetailActivity.class);
+                intent.putExtra("detail_url", videoBean.getHref());
                 startActivity(intent);
 
             }
@@ -96,7 +91,7 @@ public class MainVideoFragment extends RxLazyFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String path = "http://www.k2938.com/type/1.html";
+                String path = "http://www.k2938.com/type/2.html";
                 Document document = null;
                 try {
                     document = Jsoup.connect(path).timeout(5000).get();
@@ -111,6 +106,11 @@ public class MainVideoFragment extends RxLazyFragment {
 
                         Element image_element = oneElement.selectFirst("img");
                         String imageurl = image_element.attr("src");
+
+                        if (href.startsWith("http") == false) {
+                            href = menuBean.getRooturl() + href;
+                        }
+
 
                         HtmlVideoBean htmlVideoBean = new HtmlVideoBean();
                         htmlVideoBean.setName(name);

@@ -17,7 +17,7 @@ public class MenuBean {
     public String menuId;//模块ID
     public Integer type;//模块类型
     public MenuType menuType;//模块类型
-    public String rootUrl;//基础URL
+    public String rooturl;//基础URL
     public boolean enable;//模块是否可用，可用则显示，不可以则不显示。
     public List<SubMenuBean> subMenus;
     public List<String> unavailible_url_list;//不可用的URL列表
@@ -47,12 +47,12 @@ public class MenuBean {
         this.type = type;
     }
 
-    public String getRootUrl() {
-        return rootUrl;
+    public String getRooturl() {
+        return rooturl;
     }
 
-    public void setRootUrl(String rootUrl) {
-        this.rootUrl = rootUrl;
+    public void setRooturl(String rootUrl) {
+        this.rooturl = rootUrl;
     }
 
     public boolean isEnable() {

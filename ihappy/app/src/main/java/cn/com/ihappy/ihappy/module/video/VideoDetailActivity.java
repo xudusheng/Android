@@ -1,104 +1,117 @@
 package cn.com.ihappy.ihappy.module.video;
 
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.GridView;
+import android.widget.SimpleAdapter;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.BindView;
 import cn.com.ihappy.ihappy.R;
+import cn.com.ihappy.ihappy.beans.video.HtmlVideoBean;
+import cn.com.ihappy.ihappy.utils.L;
 
 
-public class VideoDetailActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class VideoDetailActivity extends AppCompatActivity {
+
+    GridView mGridView;
+    SimpleAdapter mSimpleAdapter;
+    List<Map<String, String>> videoList = new ArrayList<>();
+
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        setTitle("试一下");
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        mGridView = findViewById(R.id.video_detail_gridview);
+        mSimpleAdapter = new SimpleAdapter(getApplicationContext(), videoList, R.layout.item_video_button, new String[]{"name"}, new int[]{R.id.text_video_button});
+        mGridView.setAdapter(mSimpleAdapter);
+        //拉取详情
+        fetchHtml();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.video_detail, menu);
-        return true;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+    public void fetchHtml() {
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String path = getIntent().getStringExtra("detail_url");
+                Document document = null;
+                try {
+                    document = Jsoup.connect(path).timeout(5000).get();
+                    Elements summary_elements = document.getElementsByClass("summary");
+                    if (summary_elements.size() > 0) {
+                        Element summary_element = summary_elements.first();
+                        String summary = summary_element.text();
+                        L.e(summary);
+                    }
 
-        } else if (id == R.id.nav_manage) {
+                    Elements items = document.getElementsByClass("dslist-group-item");
+                    for (Element oneElement : items) {
+                        Element a_link_element = oneElement.selectFirst("a");
+                        String name = a_link_element.text();
+                        String href = a_link_element.attr("href");
 
-        } else if (id == R.id.nav_share) {
+                        L.e("name = " + name + "            href = " + href);
 
-        } else if (id == R.id.nav_send) {
+                        Map<String, String> hashMap = new HashMap<>();
+                        hashMap.put("name", name);
+                        hashMap.put("href", href);
+                        videoList.add(hashMap);
 
-        }
+                    }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+                    mGridView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSimpleAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
     }
 }
