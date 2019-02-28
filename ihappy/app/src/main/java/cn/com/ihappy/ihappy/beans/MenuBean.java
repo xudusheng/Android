@@ -3,6 +3,14 @@ package cn.com.ihappy.ihappy.beans;
 import java.util.List;
 
 public class MenuBean {
+//    public static final MenuType Reader = 0;//阅读器
+//    public static final MenuType Q2002 = 1;
+//    public static final MenuType Video = 2;//原生视频接口
+//    public static final MenuType HotNews = 3;//头条新闻
+//    public static final MenuType Bizhi = 4;//美女壁纸
+//    public static final MenuType Shuaige = 5;//帅哥壁纸
+//    public static final MenuType Welfare = 6;//福利
+
     public enum MenuType {
         Reader,//阅读器
         Q2002,

@@ -2,38 +2,44 @@ package cn.com.ihappy.ihappy.module.video;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import com.flyco.tablayout.SlidingTabLayout;
 
-import java.io.IOException;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.ihappy.ihappy.MainActivity;
 import cn.com.ihappy.ihappy.R;
 import cn.com.ihappy.ihappy.base.RxLazyFragment;
-import cn.com.ihappy.ihappy.beans.video.HtmlVideoBean;
-import cn.com.ihappy.ihappy.utils.L;
+import cn.com.ihappy.ihappy.beans.MenuBean;
+import cn.com.ihappy.ihappy.beans.SubMenuBean;
 
 public class MainVideoFragment extends RxLazyFragment {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @BindView(R.id.video_recyclerView)
-    RecyclerView mRecyclerView;
+    @BindView(R.id.st_main_video)
+    SlidingTabLayout mSlidingTabLayout;
 
-    VideoAdapter mVideoAdapter;
+    @BindView(R.id.vp_main_video)
+    ViewPager mViewPager;
 
+    private VideoListPagerAdapter mPagerAdapter;
+    private ArrayList<VideoListFragment> videoListFragments = new ArrayList<>();
+    private MenuBean mMenuBean;
+
+
+    public MainVideoFragment(MenuBean mMenuBean) {
+        this.mMenuBean = mMenuBean;
+    }
 
     @Override
     public int getLayoutResId() {
@@ -42,39 +48,19 @@ public class MainVideoFragment extends RxLazyFragment {
 
     @Override
     public void finishCreateView(Bundle state) {
-        mToolbar.setTitle(this.menuBean.title);
+        mToolbar.setTitle(this.mMenuBean.title);
         mToolbar.setNavigationIcon(R.drawable.ic_navigation_drawer);
 
 
-        //使用瀑布流布局,第一个参数 spanCount 列数,第二个参数 orentation 排列方向
-        StaggeredGridLayoutManager recyclerViewLayoutManager =
-                new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        //线性布局Manager
-//        LinearLayoutManager recyclerViewLayoutManager = new LinearLayoutManager(this);
-//        recyclerViewLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        //网络布局Manager
-//        GridLayoutManager recyclerViewLayoutManager = new GridLayoutManager(this, 3);
-        //给recyclerView设置LayoutManager
+        for (SubMenuBean subMenuBean : this.mMenuBean.subMenus) {
+            VideoListFragment fragment = new VideoListFragment(this.mMenuBean.rooturl, subMenuBean);
+            videoListFragments.add(fragment);
+        }
 
-        mRecyclerView.setLayoutManager(recyclerViewLayoutManager);
-        mVideoAdapter = new VideoAdapter(this.getContext());
-        //设置adapter
-        mRecyclerView.setAdapter(mVideoAdapter);
+        mPagerAdapter = new VideoListPagerAdapter(getFragmentManager());
+        mViewPager.setAdapter(mPagerAdapter);
+        mSlidingTabLayout.setViewPager(mViewPager);
 
-        mVideoAdapter.setOnItemClickListener(new VideoAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                HtmlVideoBean videoBean = mVideoAdapter.videoList.get(position);
-                L.e(videoBean.toString());
-
-                Intent intent = new Intent(getContext(), VideoDetailActivity.class);
-                intent.putExtra("detail_url", videoBean.getHref());
-                startActivity(intent);
-
-            }
-        });
-
-        this.fetchHtml();
     }
 
     @OnClick(R.id.toolbar)
@@ -85,59 +71,26 @@ public class MainVideoFragment extends RxLazyFragment {
         }
     }
 
-    public void fetchHtml() {
 
+    private class VideoListPagerAdapter extends FragmentPagerAdapter {
+        public VideoListPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String path = "http://www.k2938.com/type/2.html";
-                Document document = null;
-                try {
-                    document = Jsoup.connect(path).timeout(5000).get();
-                    Log.e("e", document.html());
-                    String htmlString = document.html();
-                    Elements items = document.getElementsByClass("movie-item");
-                    for (Element oneElement : items) {
-                        Element a_link_element = oneElement.selectFirst("a");
-                        String name = a_link_element.attr("title");
-                        String href = a_link_element.attr("href");
-                        Log.i("title", name);
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mMenuBean.subMenus.get(position).title;
+        }
 
-                        Element image_element = oneElement.selectFirst("img");
-                        String imageurl = image_element.attr("src");
+        @Override
+        public Fragment getItem(int i) {
+            return videoListFragments.get(i);
+        }
 
-                        if (href.startsWith("http") == false) {
-                            href = menuBean.getRooturl() + href;
-                        }
-
-
-                        HtmlVideoBean htmlVideoBean = new HtmlVideoBean();
-                        htmlVideoBean.setName(name);
-                        htmlVideoBean.setHref(href);
-                        htmlVideoBean.setImageurl(imageurl);
-
-                        mVideoAdapter.videoList.add(htmlVideoBean);
-                        Log.i("image", htmlVideoBean.toString());
-
-                    }
-
-                    mRecyclerView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mVideoAdapter.notifyDataSetChanged();
-                        }
-                    });
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-
+        @Override
+        public int getCount() {
+            return mMenuBean.subMenus.size();
+        }
     }
-
-
 }

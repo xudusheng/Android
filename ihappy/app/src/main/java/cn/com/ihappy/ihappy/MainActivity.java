@@ -94,9 +94,9 @@ public class MainActivity extends RxBaseActivity implements NavigationView.OnNav
             case Bizhi:
                 return new MainMeiziFragment();
             case Q2002:
-                return new MainVideoFragment();
+                return new MainVideoFragment(menuBean);
             case Video:
-                return new MainVideoFragment();
+                return new MainVideoFragment(menuBean);
             case Shuaige:
                 return new MainShuaigeFragment();
             case HotNews:
