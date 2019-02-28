@@ -51,6 +51,7 @@ public class VideoListFragment extends Fragment {
 
     private SmartRefreshLayout mSmartRefreshLayout;
     public VideoListFragment(String baseUrl, SubMenuBean subMenuBean) {
+        super();
         this.baseUrl = baseUrl;
         this.subMenuBean = subMenuBean;
         this.firstPageUrl = this.subMenuBean.url;
@@ -79,7 +80,7 @@ public class VideoListFragment extends Fragment {
         //给recyclerView设置LayoutManager
 
         mRecyclerView.setLayoutManager(recyclerViewLayoutManager);
-        mVideoAdapter = new VideoAdapter(this.getContext());
+        mVideoAdapter = new VideoAdapter(getContext());
         //设置adapter
         mRecyclerView.setAdapter(mVideoAdapter);
 
@@ -88,9 +89,9 @@ public class VideoListFragment extends Fragment {
             public void onItemClick(View view, int position) {
                 HtmlVideoBean videoBean = mVideoAdapter.videoList.get(position);
                 L.e(videoBean.toString());
-
                 Intent intent = new Intent(getContext(), VideoDetailActivity.class);
                 intent.putExtra("detail_url", videoBean.getHref());
+                intent.putExtra("title", videoBean.getName());
                 startActivity(intent);
 
             }
@@ -142,7 +143,6 @@ public class VideoListFragment extends Fragment {
                             break;
                         }
                     }
-
 
 
                     if (isFirstPage) {

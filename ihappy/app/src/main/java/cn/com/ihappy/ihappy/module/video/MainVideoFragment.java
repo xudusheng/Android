@@ -38,6 +38,7 @@ public class MainVideoFragment extends RxLazyFragment {
 
 
     public MainVideoFragment(MenuBean mMenuBean) {
+        super();
         this.mMenuBean = mMenuBean;
     }
 

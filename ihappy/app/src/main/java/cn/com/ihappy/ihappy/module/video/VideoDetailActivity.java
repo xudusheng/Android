@@ -39,7 +39,7 @@ public class VideoDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_detail);
 
-        setTitle("试一下");
+        setTitle(getIntent().getStringExtra("title"));
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
