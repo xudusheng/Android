@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,10 @@ import cn.com.ihappy.ihappy.beans.meizi.MeituBean;
 import cn.com.ihappy.ihappy.beans.video.HtmlVideoBean;
 import cn.com.ihappy.ihappy.module.meizi.ImageAdapter;
 
-public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoItemHolder>{
+public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoItemHolder> {
     List<HtmlVideoBean> videoList = new ArrayList<>();
     Context mContext;
-    private static OnItemClickListener mOnItemClickListener;
+    private OnItemClickListener mOnItemClickListener;
 
 
     public VideoAdapter(Context context) {
@@ -36,6 +37,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoItemHol
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public VideoItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+        Log.i("onCreateViewHolder", "=======" + i);
         //加载item 布局文件
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_main_video, parent, false);
         return new VideoItemHolder(view);
@@ -43,7 +45,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoItemHol
 
     @Override
     public void onBindViewHolder(@NonNull VideoItemHolder viewHolder, int position) {
-
         //用于绑定事件
         viewHolder.position = position;
         HtmlVideoBean htmlVideoBean = this.videoList.get(position);
@@ -58,11 +59,19 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoItemHol
         return this.videoList.size();
     }
 
+    // 自定义点击事件
+    public void setOnItemClickListener(VideoAdapter.OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
 
-    static class VideoItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    class VideoItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imageView;
         TextView textView;
-
         int position;
 
         public VideoItemHolder(@NonNull View itemView) {
@@ -78,15 +87,5 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoItemHol
                 mOnItemClickListener.onItemClick(imageView, this.position);
             }
         }
-    }
-
-
-    // 自定义点击事件
-    public void setOnItemClickListener(VideoAdapter.OnItemClickListener mOnItemClickListener) {
-        this.mOnItemClickListener = mOnItemClickListener;
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
     }
 }
