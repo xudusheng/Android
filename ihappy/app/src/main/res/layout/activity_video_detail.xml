@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".module.video.VideoDetailActivity">
+    tools:context=".module.video.VideoDetailActivity"
+    android:orientation="vertical">
 
+    <WebView
+        android:id="@+id/wv_video_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </WebView>
     <GridView
         android:id="@+id/video_detail_gridview"
         android:layout_width="match_parent"
@@ -14,9 +20,7 @@
         android:horizontalSpacing="10dp"
         android:numColumns="5"
         android:stretchMode="columnWidth"
-
         >
 
-
     </GridView>
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

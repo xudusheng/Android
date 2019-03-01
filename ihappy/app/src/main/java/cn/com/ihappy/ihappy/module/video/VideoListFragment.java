@@ -92,10 +92,10 @@ public class VideoListFragment extends Fragment {
                 HtmlVideoBean videoBean = mVideoAdapter.videoList.get(position);
                 L.e(videoBean.toString());
                 Intent intent = new Intent(getContext(), VideoDetailActivity.class);
+                intent.putExtra("base_url", baseUrl);
                 intent.putExtra("detail_url", videoBean.getHref());
                 intent.putExtra("title", videoBean.getName());
                 startActivity(intent);
-
             }
         });
 
